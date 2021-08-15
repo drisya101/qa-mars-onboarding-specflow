@@ -5,4 +5,4 @@
 
 @mytag
 Scenario: Login to website
-	Given I login to the website
+	Given I am logged in as a Seller
