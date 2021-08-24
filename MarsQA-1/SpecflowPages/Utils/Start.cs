@@ -1,4 +1,5 @@
-﻿using MarsQA_1.Helpers;
+﻿using BoDi;
+using MarsQA_1.Helpers;
 using MarsQA_1.Pages;
 using RelevantCodes.ExtentReports;
 using System;
@@ -11,37 +12,15 @@ using static MarsQA_1.Helpers.CommonMethods;
 
 namespace MarsQA_1.Utils
 {
+    //Reference:https://docs.specflow.org/projects/specflow/en/latest/ui-automation/Selenium-with-Page-Object-Pattern.html#using-the-same-browser-for-all-scenarios
     [Binding]
-    public class Start : Driver
+    public class SharedBrowserHooks
     {
-
-        [BeforeScenario]
-        public void Setup()
+        [BeforeTestRun]
+        public static void BeforeTestRun(ObjectContainer testThreadContainer)
         {
-            //launch the browser
-            Initialize();
-            ExcelLibHelper.PopulateInCollection(@"MarsQA-1\SpecflowTests\Data\Mars.xlsx", "Credentials");
-            //call the SignIn class
-            SignIn.SigninStep();
-        }
-
-        [AfterScenario]
-        public void TearDown()
-        {
-
-            // Screenshot
-            string img = SaveScreenShotClass.SaveScreenshot(Driver.driver, "Report");
-           test.Log(LogStatus.Info, "Snapshot below: " + test.AddScreenCapture(img));
-            //Close the browser
-            Close();
-             
-            // end test. (Reports)
-            CommonMethods.Extent.EndTest(test);
-            
-            // calling Flush writes everything to the log file (Reports)
-            CommonMethods.Extent.Flush();
-           
-
+            //Initialize a shared BrowserDriver in the global container
+            testThreadContainer.BaseContainer.Resolve<BrowserDriver>();
         }
     }
 }
